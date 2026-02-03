@@ -1,6 +1,7 @@
-import { Controller, Post, Body, Res } from '@nestjs/common';
+import { Controller, Post, Body, Req, Res, Get } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import type { Response } from 'express';
+import { lucia, sessionCookieAttributes } from './lucia';
+import type { Request, Response } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -20,6 +21,7 @@ export class AuthController {
       sessionCookie.value,
       sessionCookie.attributes,
     );
+    console.log('AuthController: set session cookie on signup', sessionCookie);
     return { success: true };
   }
 
@@ -37,6 +39,34 @@ export class AuthController {
       sessionCookie.value,
       sessionCookie.attributes,
     );
+    console.log('AuthController: set session cookie on login', sessionCookie);
+    return { success: true };
+  }
+
+  @Get('me')
+  async getCurrentUser(@Req() req: Request) {
+    const sessionId = req.cookies[lucia.sessionCookieName];
+    console.log(
+      'AuthController: incoming cookies',
+      req.cookies,
+      'sessionId',
+      sessionId,
+    );
+    if (!sessionId) return { user: null };
+
+    const { user } = await this.authService.validateSession(sessionId);
+
+    const safeUser = user
+      ? { id: user.id, username: (user as any).username }
+      : null;
+
+    console.log('AuthController: validated session user', safeUser);
+    return { user: safeUser };
+  }
+
+  @Post('logout')
+  logout(@Res({ passthrough: true }) res: Response) {
+    res.clearCookie(lucia.sessionCookieName, sessionCookieAttributes);
     return { success: true };
   }
 }

@@ -15,26 +15,35 @@ modular-synth/
 
 ## Install everything
 
-1. Install everything
+1. In the **root** directory, install everything
 ```bash
-cd modular-synth
 pnpm install
 ```
 
-2. Start the Database (Docker)
+2. In the **root** directory, start the containerised local development [PostGresQL](https://www.postgresql.org/) database with [Docker](https://www.docker.com/) ([Docker Compose](https://docs.docker.com/compose/))
 ```bash
 docker compose up -d
 ```
-(Uses port 5432. Change to 5433 in docker-compose.yml if you have a conflict.)
 
-3. Prisma setup (run once)
+3.  The backend server uses the ORM [Prisma](https://www.prisma.io/)  and an environment variable `DATABASE_URL` to connect to the local development database.
+
+    Create the file `/apps/server/.env` and add the environment variable: 
+    `DATABASE_URL="postgresql://dev_user:dev_password@localhost:5433/dev_db_modular_synth?schema=public"`
+
+    Ensure that the DATABASE_URL corresponds with the environment variables in `./docker-compose.yml`: 
+    - POSTGRES_USER
+    - POSTGRES_PASSWORD
+    - POSTGRES_DB
+    - ports 
+
+3. In the `apps/server` directory, run the Prisma setup once
 ```bash
-cd apps/server
 npx prisma generate
 npx prisma db push
 ```
 
 4. Start everything
+
 In separate terminals:
 
 Terminal 1 – Backend (NestJS + auth + patches)
@@ -48,7 +57,6 @@ Terminal 2 – Frontend (SvelteKit)
 cd apps/ui
 pnpm run dev
 ```
-Open → http://localhost:5173
 
 Available Scripts (from project root)
 ```bash
@@ -58,8 +66,10 @@ pnpm prisma studio          # Run Prisma Studio GUI
 ```
 
 Authentication (already working)
-POST /auth/signup → creates user + sets session cookie
-POST /auth/login  → logs in + sets session cookie
+
+`POST /auth/signup` → creates user + sets session cookie
+
+`POST /auth/login`  → logs in + sets session cookie
 
 Example:
 ```bash
@@ -67,6 +77,7 @@ curl -X POST http://localhost:3000/auth/signup \
   -H "Content-Type: application/json" \
   -d '{"username":"demo","password":"demo123"}'
 ```
+
 ## Patch Storage (coming next)
 Patches are stored in the Patch table with data: Json (full Svelte Flow graph + Faust code).
 Only the owner can edit their patches (we’ll add protection soon).

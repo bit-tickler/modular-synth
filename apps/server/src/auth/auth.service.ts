@@ -2,15 +2,16 @@ import { Injectable } from '@nestjs/common';
 import { hash, verify } from '@node-rs/argon2';
 import { generateIdFromEntropySize } from 'lucia';
 import { PrismaService } from '../prisma/prisma.service';
-import { createLucia } from './lucia';
-import type { Lucia } from 'lucia';
+import { getLucia } from './lucia';
 
 @Injectable()
 export class AuthService {
-  private lucia: Lucia;
-
   constructor(private readonly prisma: PrismaService) {
-    this.lucia = createLucia(prisma);
+    getLucia(prisma); // force init
+  }
+
+  private get lucia() {
+    return getLucia(this.prisma);
   }
 
   async signup(username: string, password: string) {
@@ -24,19 +25,22 @@ export class AuthService {
     const session = await this.lucia.createSession(user.id, {});
     const sessionCookie = this.lucia.createSessionCookie(session.id);
 
-    return { user, sessionCookie };
+    return { sessionCookie };
   }
 
   async login(username: string, password: string) {
     const user = await this.prisma.user.findUnique({ where: { username } });
-    if (!user) throw new Error('Invalid credentials');
-
-    const valid = await verify(user.passwordHash, password);
-    if (!valid) throw new Error('Invalid credentials');
+    if (!user || !(await verify(user.passwordHash, password))) {
+      throw new Error('Invalid credentials');
+    }
 
     const session = await this.lucia.createSession(user.id, {});
     const sessionCookie = this.lucia.createSessionCookie(session.id);
 
-    return { user, sessionCookie };
+    return { sessionCookie };
+  }
+
+  async validateSession(sessionId: string) {
+    return this.lucia.validateSession(sessionId);
   }
 }
