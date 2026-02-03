@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+dist
+.svelte-kit
+build
+.turbo
+
+# Prisma
+prisma/generated
+
+# Logs & cache
+*.log
+.turbo/cache
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
