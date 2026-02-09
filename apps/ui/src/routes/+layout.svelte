@@ -1,14 +1,17 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
+	import { onMount } from 'svelte';
+	import { fetchCurrentUser, currentUser, logout } from '$lib/auth';
+	import { initTheme } from '$lib/stores/theme';
 	import Header from '$lib/components/Header.svelte';
+	import "../app.css";
 
 	let { children } = $props();
+	
+	onMount(() => {
+		fetchCurrentUser();
+		initTheme();
+	});
 </script>
 
-<svelte:head>
-	<link rel="icon" href={favicon} />
-</svelte:head>
-
 <Header />
-
 {@render children()}
