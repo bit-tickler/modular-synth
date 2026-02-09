@@ -7,7 +7,7 @@ import { getLucia } from './lucia';
 @Injectable()
 export class AuthService {
   constructor(private readonly prisma: PrismaService) {
-    getLucia(prisma); // force init
+    getLucia(prisma);
   }
 
   private get lucia() {
