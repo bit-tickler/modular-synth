@@ -7,8 +7,6 @@ const config = {
 
 	kit: {
 		adapter: adapter(),
-
-		// Monorepo alias (SvelteKit-approved way)
 		alias: {
 			'audio-engine': '../../packages/audio-engine/src',
 			'audio-engine/*': '../../packages/audio-engine/src/*'
