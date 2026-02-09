@@ -58,12 +58,33 @@ cd apps/ui
 pnpm run dev
 ```
 
-Available Scripts (from project root)
+## Available Scripts
+
+### From root directory
+
+- Build everything:
 ```bash
-pnpm turbo run build        # Build everything
-pnpm turbo run dev          # Run UI + server in watch mode (recommended)
-pnpm prisma studio          # Run Prisma Studio GUI
+pnpm turbo run build
 ```
+
+- Run UI + server in watch mode (recommended)
+```bash
+pnpm turbo run dev
+```
+
+- Run Prisma Studio Web bases GUI
+```bash
+pnpm prisma studio
+```
+
+### From `apps/server` directory:
+
+- Generate both the **server** AND **ui** Prisma clients:
+```bash
+pnpm prisma:generate
+```
+*Note: @prisma/client is installed in both the **server** AND **ui** directories, this is to enable the TS types generated within the Prisma client to be accessible in the frontend ui, improving type consistency across the codebase.*
+
 
 Authentication (already working)
 
