@@ -6,7 +6,10 @@ let instance: Lucia | null = null;
 
 export const sessionCookieAttributes = {
   secure: process.env.NODE_ENV === 'production',
-  sameSite: process.env.NODE_ENV === 'production' ? ('none' as const) : ('lax' as const),
+  sameSite:
+    process.env.NODE_ENV === 'production'
+      ? ('none' as const)
+      : ('lax' as const),
   httpOnly: true,
   path: '/',
 };
