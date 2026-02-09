@@ -21,7 +21,6 @@ export class AuthController {
       sessionCookie.value,
       sessionCookie.attributes,
     );
-    console.log('AuthController: set session cookie on signup', sessionCookie);
     return { success: true };
   }
 
@@ -39,19 +38,12 @@ export class AuthController {
       sessionCookie.value,
       sessionCookie.attributes,
     );
-    console.log('AuthController: set session cookie on login', sessionCookie);
     return { success: true };
   }
 
   @Get('me')
   async getCurrentUser(@Req() req: Request) {
     const sessionId = req.cookies[lucia.sessionCookieName];
-    console.log(
-      'AuthController: incoming cookies',
-      req.cookies,
-      'sessionId',
-      sessionId,
-    );
     if (!sessionId) return { user: null };
 
     const { user } = await this.authService.validateSession(sessionId);
@@ -59,8 +51,6 @@ export class AuthController {
     const safeUser = user
       ? { id: user.id, username: (user as any).username }
       : null;
-
-    console.log('AuthController: validated session user', safeUser);
     return { user: safeUser };
   }
 
